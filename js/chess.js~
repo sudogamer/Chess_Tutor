@@ -1,0 +1,1138 @@
+/**
+ * Created by Ghost on 14/4/14.
+ */
+$(document).ready(main);
+
+
+function main(){
+    organizingboard();
+   
+    controlflow();
+
+}
+
+function organizingboard(){
+  
+    establishevents();
+}
+
+var whiteshift=false;
+function controlflow(){
+    if(whiteshift==false){
+        $(".fBlack,.fWhite").draggable();
+        $(".fBlack").draggable("enable");
+        $(".fWhite").draggable("enable");
+        $("#shifts p").fadeOut("fast",function(){$("#shifts p").html("Move the white pieces");
+            $("#shifts p").fadeIn("slow");
+        });
+
+    }
+    else{
+        $(".fBlack,.fWhite").draggable();
+        $(".fWhite").draggable("enable");
+        $(".fBlack").draggable("enable");
+        $("#shifts p").fadeOut("fast",function(){$("#shifts p").html("Move the black pieces");
+            $("#shifts p").fadeIn("slow");
+        });
+
+    }
+}
+
+function establishevents(){
+    var file =$(".file");
+    file.draggable();
+    file.mouseup(upFile);
+    file.mousedown(downFile);
+    file.mouseover(overFile);
+    file = $(".pawnB");
+    file.mousedown(downPawn2);
+  
+    
+    file = $(".tower");
+    file.mousedown(downT);
+    
+    file = $(".horse");
+    file.mousedown(downH);
+    
+    file = $(".bishop");
+    file.mousedown(downB);
+    
+    file = $(".qween");
+    file.mousedown(downQ);
+    file = $(".king");
+    file.mousedown(downK);
+}
+function downFile(){
+   $(".file").css("z-index","100");
+   $(this).css("z-index","1000");
+}
+
+
+
+function showinfo(file){
+    var image = $("#info img");
+    var name = $("#info span");
+    var info=$("#info");
+    if(file.hasClass("pawnB")||file.hasClass("pawnN")){
+        image.attr("src","img/pawn.png");
+        name.html("Pawn");
+        info.css("background","-moz-linear-gradient(#BD1D49, #DE5076)");
+        info.css("background","-webkit-linear-gradient(#BD1D49, #DE5076)");
+    }
+    if(file.hasClass("tower")){
+        image.attr("src","img/tower.png");
+        name.html("Rook");
+        info.css("background","-moz-linear-gradient(#001941, #69A3FF)");
+        info.css("background","-webkit-linear-gradient(#001941, #69A3FF)");
+    }
+    if(file.hasClass("horse")){
+        image.attr("src","img/horse.png");
+        name.html("Knigth");
+        info.css("background","-moz-linear-gradient(#009916, #2EFF4D)");
+        info.css("background","-webkit-linear-gradient(#009916, #2EFF4D)");
+
+    }
+    if(file.hasClass("bishop")){
+        image.attr("src","img/bishop.png");
+        name.html("Bishop");
+        info.css("background","-moz-linear-gradient(#F5B301, #F7D062)");
+        info.css("background","-webkit-linear-gradient(#F5B301, #F7D062)");
+    }
+    if(file.hasClass("qween")){
+        image.attr("src","img/qween.png");
+        name.html("Queen");
+        info.css("background","-moz-linear-gradient(#016BC1, #A8D8FF)");
+        info.css("background","-webkit-linear-gradient(#016BC1, #A8D8FF)");
+    }
+    if(file.hasClass("king")){
+        image.attr("src","img/king.png");
+        name.html("King");
+        info.css("background","-moz-linear-gradient(#603CBA, #976EFF)");
+        info.css("background","-webkit-linear-gradient(#603CBA, #976EFF)");
+    }
+}
+function overFile(){
+    var file = $(this);
+    file.draggable();
+
+}
+
+function downPawn(){
+    unDroppable();
+    var file = $(this);
+    showinfo(file);
+    var box=file.parent().attr("id");
+    var arr = box.split("");
+    var column = arr[0];
+    var row = arr[1];
+    row = parseInt(row)+1;
+
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enabled.css("background","red");
+        enabled.droppable({drop:dropPawn});
+        enabled.droppable({accept:".pawnB"});
+
+    }
+
+    if(file.attr("value")=="false"){
+        row = parseInt(row)+1;
+        enabled=$("#"+column+row);
+        var enabled2=$("#"+column+[row-1]);
+        if(enabled.attr("value")=="empty"&&enabled2.attr("value")=="empty"){
+            enabled.css("background","red");
+            enabled.droppable({drop:dropPawn});
+            enabled.droppable({accept:".pawnB"});
+        }
+
+    }
+   
+}
+
+function dropGeneric(table,file,tableProc){
+    file.remove();
+    file.attr("value","true");
+    table.html(file);
+    table.attr("value","busy");
+    tableProc.attr("value","empty");
+    file.draggable();
+    file.mouseup(upFile);
+    file.mousedown(downFile);
+    unDroppable();
+}
+
+function dropPawn(event,ui){
+    var table = $(this);
+    var file = ui.draggable;
+    var tableProc = file.parent();
+    dropGeneric(table,file,tableProc);
+    file.mousedown(downPawn);
+    pregWhitecrown(table);
+    whiteshift=true;
+    controlflow();
+}
+
+function downPawn2(){
+
+    unDroppable();
+    var file = $(this);
+    showinfo(file);
+    var box=file.parent().attr("id");
+    var arr = box.split("");
+    var column = arr[0];
+    var row = arr[1];
+    row = parseInt(row)+2;
+
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enabled.css("background","red");
+        enabled.droppable({drop:dropPawn});
+        enabled.droppable({accept:".pawnB"});
+
+    }
+
+    if(file.attr("value")=="false"){
+        row = parseInt(row)+1;
+        enabled=$("#"+column+row);
+        var enabled2=$("#"+column+[row-1]);
+        if(enabled.attr("value")=="empty"&&enabled2.attr("value")=="empty"){
+            enabled.css("background","red");
+            enabled.droppable({drop:dropPawn});
+            enabled.droppable({accept:".pawnB"});
+        }
+
+    }
+
+function dropGeneric(table,file,tableProc){
+    file.remove();
+    file.attr("value","true");
+    table.html(file);
+    table.attr("value","busy");
+    tableProc.attr("value","empty");
+    file.draggable();
+    file.mouseup(upFile);
+    file.mousedown(downFile);
+    unDroppable();
+}
+
+function dropPawn(event,ui){
+    var table = $(this);
+    var file = ui.draggable;
+    var tableProc = file.parent();
+    dropGeneric(table,file,tableProc);
+    file.mousedown(downPawn);
+    pregWhitecrown(table);
+    whiteshift=true;
+    controlflow();
+}
+
+
+}
+
+function downT(){
+    unDroppable();
+    var file = $(this);
+    showinfo(file);
+    var box=file.parent().attr("id");
+    var arr = box.split("");
+    var column = arr[0];
+    var row = arr[1];
+    row = parseInt(row)+1;
+
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enabled.css("background","red");
+        enabled.droppable({drop:dropTower});
+        enabled.droppable({accept:".towerB"});
+
+    }
+
+    if(file.attr("value")=="false"){
+        row = parseInt(row)+1;
+        enabled=$("#"+column+row);
+        var enabled2=$("#"+column+[row-1]);
+        if(enabled.attr("value")=="empty"&&enabled2.attr("value")=="empty"){
+            enabled.css("background","red");
+            enabled.droppable({drop:dropTower});
+            enabled.droppable({accept:".towerB"});
+        }
+
+    }
+
+}
+
+function downH(){
+    unDroppable();
+    var file = $(this);
+    showinfo(file);
+    var box=file.parent().attr("id");
+    var arr = box.split("");
+    var column = arr[0];
+    var row = arr[1];
+    row = parseInt(row)+1;
+
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enabled.css("background","red");
+        enabled.droppable({drop:dropHorse});
+        enabled.droppable({accept:".horseB"});
+
+    }
+
+    if(file.attr("value")=="false"){
+        row = parseInt(row)+1;
+        enabled=$("#"+column+row);
+        var enabled2=$("#"+column+[row-1]);
+        if(enabled.attr("value")=="empty"&&enabled2.attr("value")=="empty"){
+            enabled.css("background","red");
+            enabled.droppable({drop:dropHorse});
+            enabled.droppable({accept:".horseB"});
+        }
+
+    }
+
+}
+
+function downB(){
+    unDroppable();
+    var file = $(this);
+    showinfo(file);
+    var box=file.parent().attr("id");
+    var arr = box.split("");
+    var column = arr[0];
+    var row = arr[1];
+    row = parseInt(row)+1;
+
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enabled.css("background","red");
+        enabled.droppable({drop:dropBishop});
+        enabled.droppable({accept:".bishopB"});
+
+    }
+
+    if(file.attr("value")=="false"){
+        row = parseInt(row)+1;
+        enabled=$("#"+column+row);
+        var enabled2=$("#"+column+[row-1]);
+        if(enabled.attr("value")=="empty"&&enabled2.attr("value")=="empty"){
+            enabled.css("background","red");
+            enabled.droppable({drop:dropBishop});
+            enabled.droppable({accept:".bishopB"});
+        }
+
+    }
+
+}
+function downQ(){
+    unDroppable();
+    var file = $(this);
+    showinfo(file);
+    var box=file.parent().attr("id");
+    var arr = box.split("");
+    var column = arr[0];
+    var row = arr[1];
+    row = parseInt(row)+1;
+
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enabled.css("background","red");
+        enabled.droppable({drop:dropQween});
+        enabled.droppable({accept:".qweenB"});
+
+    }
+
+    if(file.attr("value")=="false"){
+        row = parseInt(row)+1;
+        enabled=$("#"+column+row);
+        var enabled2=$("#"+column+[row-1]);
+        if(enabled.attr("value")=="empty"&&enabled2.attr("value")=="empty"){
+            enabled.css("background","red");
+            enabled.droppable({drop:dropQween});
+            enabled.droppable({accept:".qweenB"});
+        }
+
+    }
+
+}
+function downK(){
+    unDroppable();
+    var file = $(this);
+    showinfo(file);
+    var box=file.parent().attr("id");
+    var arr = box.split("");
+    var column = arr[0];
+    var row = arr[1];
+    row = parseInt(row)+1;
+
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enabled.css("background","red");
+        enabled.droppable({drop:dropKing});
+        enabled.droppable({accept:".kingB"});
+
+    }
+
+    if(file.attr("value")=="false"){
+        row = parseInt(row)+1;
+        enabled=$("#"+column+row);
+        var enabled2=$("#"+column+[row-1]);
+        if(enabled.attr("value")=="empty"&&enabled2.attr("value")=="empty"){
+            enabled.css("background","red");
+            enabled.droppable({drop:dropKing});
+            enabled.droppable({accept:".kingB"});
+        }
+
+    }
+
+}
+
+}
+function enabletower(enabled){
+    enabled.css("background","blue");
+    enabled.droppable({drop:dropTower});
+    enabled.droppable({accept:".tower"});
+}
+function downTower(){
+    unDroppable();
+    var file = $(this);
+    showinfo(file);
+    var box=file.parent().attr("id");
+    var arr = box.split("");
+    var column = arr[0];
+    var row = arr[1];
+    var enabled;
+
+    var stop=false;
+    for(var i=row;i<=8&&!stop;i++){
+        if(i!=row){
+            enabled=$("#"+column+i);
+            if(enabled.attr("value")=="empty"){
+                enabletower(enabled);
+            }
+            else{
+                stop=true;
+                questiontower(enabled);
+
+
+            }
+        }
+    }
+    var stop2=false;
+    for(var i=column;i<=8&&!stop2;i++){
+        if(i!=column){
+            enabled=$("#"+i+row);
+            if(enabled.attr("value")=="empty"){
+                enabletower(enabled);
+            }
+            else{
+                stop2=true;
+                questiontower(enabled);
+
+            }
+        }
+
+    }
+
+
+
+    var stop3=false;
+    for(var i=row;i>=1&&!stop3;i--){
+        if(i!=row){
+            enabled=$("#"+column+i);
+            if(enabled.attr("value")=="empty"){
+                enabletower(enabled);
+            }
+            else{
+                stop3=true;
+                questiontower(enabled);
+            }
+        }
+    }
+    var stop4=false;
+    for(var i=column;i>=1&&!stop4;i--){
+        if(i!=column){
+            enabled=$("#"+i+row);
+            if(enabled.attr("value")=="empty"){
+                enabletower(enabled);
+            }
+            else{
+                stop4=true;
+                questiontower(enabled);
+
+            }
+        }
+
+    }
+
+}
+function questionflow(file){
+    if(file.hasClass("fWhite")){
+        whiteshift=true;
+        controlflow();
+    }
+    else{
+        whiteshift=false;
+        controlflow();
+    }
+}
+function dropTower(event,ui){
+    var table = $(this);
+    var file = ui.draggable;
+    var tableProc = file.parent();
+    dropGeneric(table,file,tableProc);
+    file.mousedown(downTower);
+    questionflow(file);
+
+
+}
+
+
+function questionHorse(enabled){
+    var f = $("#"+enabled.attr("id")+" img");
+   
+}
+function enableHorse(enabled){
+    enabled.css("background","green");
+    enabled.droppable({drop:dropHorse});
+    enabled.droppable({accept:".horse"});
+}
+function downHorse(){
+    unDroppable();
+    var file = $(this);
+    showinfo(file);
+    var box=file.parent().attr("id");
+    var arr = box.split("");
+    var column = arr[0];
+    var row = arr[1];
+    var enabled;
+    row=parseInt(row)+2;
+    column= parseInt(column)+1;
+    enabled=$("#"+column+row);
+
+    if(enabled.attr("value")=="empty"){
+        enableHorse(enabled);
+
+    }else{
+        questionHorse(enabled);
+    }
+
+    column= parseInt(column)-2;
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enableHorse(enabled);
+    }else{
+        questionHorse(enabled);
+    }
+
+    row=parseInt(row)-1;
+    column= parseInt(column)-1;
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enableHorse(enabled);
+    }else{
+        questionHorse(enabled);
+    }
+
+    column= parseInt(column)+4;
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enableHorse(enabled);
+    }else{
+        questionHorse(enabled);
+    }
+
+
+    column = arr[0];
+    row = arr[1];
+
+    row=parseInt(row)-2;
+    column= parseInt(column)-1;
+    enabled=$("#"+column+row);
+
+    if(enabled.attr("value")=="empty"){
+        enableHorse(enabled);
+    }else{
+        questionHorse(enabled);
+    }
+
+    column= parseInt(column)+2;
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enableHorse(enabled);
+    }else{
+        questionHorse(enabled);
+    }
+
+    row=parseInt(row)+1;
+    column= parseInt(column)+1;
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enableHorse(enabled);
+    }else{
+        questionHorse(enabled);
+    }
+
+    column= parseInt(column)-4;
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enableHorse(enabled);
+    }else{
+        questionHorse(enabled);
+    }
+
+
+
+
+}
+
+function dropHorse(event,ui){
+    var table = $(this);
+    var file = ui.draggable;
+    var tableProc = file.parent();
+    dropGeneric(table,file,tableProc);
+    file.mousedown(downHorse);
+    questionflow(file);
+}
+
+
+function questionBishop(enabled){
+    var fAux=$("#"+enabled.attr("id")+ " img");
+   
+}
+function enableBishop(enabled){
+    enabled.css("background","yellow");
+    enabled.droppable({drop:dropBishop});
+    enabled.droppable({accept:".bishop"});
+}
+function downBishop(){
+    unDroppable();
+    var file = $(this);
+    showinfo(file);
+    var box=file.parent().attr("id");
+    var arr = box.split("");
+    var column = arr[0];
+    var row = arr[1];
+    var enabled;
+
+    var stop=false;
+    for(var i=1;i<=8&&!stop;i++){
+        if(i!=row){
+            column++;
+            row++;
+            enabled=$("#"+column+row);
+
+            if(enabled.attr("value")=="empty"){
+                enableBishop(enabled);
+            }
+            else{
+                stop=true;
+                questionBishop(enabled);
+
+            }
+        }
+    }
+    column = arr[0];
+    row = arr[1];
+    var stop2=false;
+    for(var i=1;i<=8&&!stop2;i++){
+        if(i!=row){
+            column--;
+            row++;
+            enabled=$("#"+column+row);
+
+            if(enabled.attr("value")=="empty"){
+                enableBishop(enabled);
+            }
+            else{
+                stop2=true;
+                questionBishop(enabled);
+            }
+        }
+    }
+
+    column = arr[0];
+    row = arr[1];
+    var stop3=false;
+    for(var i=1;i<=8&&!stop3;i++){
+        if(i!=row){
+            column--;
+            row--;
+            enabled=$("#"+column+row);
+
+            if(enabled.attr("value")=="empty"){
+                enableBishop(enabled);
+            }
+            else{
+                stop3=true;
+                questionBishop(enabled);
+            }
+        }
+    }
+
+
+    column = arr[0];
+    row = arr[1];
+    var stop3=false;
+    for(var i=1;i<=8&&!stop3;i++){
+        if(i!=row){
+            column++;
+            row--;
+            enabled=$("#"+column+row);
+
+            if(enabled.attr("value")=="empty"){
+                enableBishop(enabled);
+            }
+            else{
+                stop3=true;
+                questionBishop(enabled);
+            }
+        }
+    }
+
+
+
+}
+
+function dropBishop(event,ui){
+    var table = $(this);
+    var file = ui.draggable;
+    var tableProc = file.parent();
+    dropGeneric(table,file,tableProc);
+    file.mousedown(downBishop);
+    questionflow(file);
+
+}
+
+
+function questionQween(enabled){
+    var fAux=$("#"+enabled.attr("id")+ " img");
+    if(fAux.hasClass('fBlack')){
+        enabled.css("background","orange");
+        enabled.droppable({drop:dropQweenKill});
+        enabled.droppable({accept:".qweenB"});
+
+    }
+    if(fAux.hasClass('fWhite')){
+        enabled.css("background","orange");
+        enabled.droppable({drop:dropQweenKill});
+        enabled.droppable({accept:".qweenN"});
+
+    }
+}
+function enableQween(enabled,color){
+    enabled.css("background",color);
+    enabled.droppable({drop:dropQween});
+    enabled.droppable({accept:".qween"});
+}
+function downQween(){
+    unDroppable();
+    var file = $(this);
+    showinfo(file);
+    var box=file.parent().attr("id");
+    var arr = box.split("");
+    var column = arr[0];
+    var row = arr[1];
+    var enabled;
+
+    var stop=false;
+    for(var i=row;i<=8&&!stop;i++){
+        if(i!=row){
+            enabled=$("#"+column+i);
+            if(enabled.attr("value")=="empty"){
+                enableQween(enabled,"DodgerBlue");
+            }
+            else{
+                stop=true;
+                questionQween(enabled);
+            }
+        }
+    }
+    var stop2=false;
+    for(var i=column;i<=8&&!stop2;i++){
+        if(i!=column){
+            enabled=$("#"+i+row);
+            if(enabled.attr("value")=="empty"){
+                enableQween(enabled,"DodgerBlue");
+            }
+            else{
+                stop2=true;
+                questionQween(enabled);
+            }
+        }
+
+    }
+
+
+
+    var stop3=false;
+    for(var i=row;i>=1&&!stop3;i--){
+        if(i!=row){
+            enabled=$("#"+column+i);
+            if(enabled.attr("value")=="empty"){
+                enableQween(enabled,"DodgerBlue");
+            }
+            else{
+                stop3=true;
+                questionQween(enabled);
+            }
+        }
+    }
+    var stop4=false;
+    for(var i=column;i>=1&&!stop4;i--){
+        if(i!=column){
+            enabled=$("#"+i+row);
+            if(enabled.attr("value")=="empty"){
+                enableQween(enabled,"DodgerBlue");
+            }
+            else{
+                stop4=true;
+                questionQween(enabled);
+            }
+        }
+
+    }
+
+
+    var stop=false;
+    for(var i=1;i<=8&&!stop;i++){
+        if(i!=row){
+            column++;
+            row++;
+            enabled=$("#"+column+row);
+
+            if(enabled.attr("value")=="empty"){
+                enableQween(enabled,"DeepSkyBlue");
+            }
+            else{
+                stop=true;
+                questionQween(enabled);
+            }
+        }
+    }
+    column = arr[0];
+    row = arr[1];
+    var stop2=false;
+    for(var i=1;i<=8&&!stop2;i++){
+        if(i!=row){
+            column--;
+            row++;
+            enabled=$("#"+column+row);
+
+            if(enabled.attr("value")=="empty"){
+                enableQween(enabled,"DeepSkyBlue");
+            }
+            else{
+                stop2=true;
+                questionQween(enabled);
+            }
+        }
+    }
+
+    column = arr[0];
+    row = arr[1];
+    var stop3=false;
+    for(var i=1;i<=8&&!stop3;i++){
+        if(i!=row){
+            column--;
+            row--;
+            enabled=$("#"+column+row);
+
+            if(enabled.attr("value")=="empty"){
+                enableQween(enabled,"DeepSkyBlue");
+            }
+            else{
+                stop3=true;
+                questionQween(enabled);
+            }
+        }
+    }
+
+    column = arr[0];
+    row = arr[1];
+    var stop2=false;
+    for(var i=1;i<=8&&!stop2;i++){
+        if(i!=row){
+            column++;
+            row--;
+            enabled=$("#"+column+row);
+
+            if(enabled.attr("value")=="empty"){
+                enableQween(enabled,"DeepSkyBlue");
+            }
+            else{
+                stop2=true;
+                questionQween(enabled);
+            }
+        }
+    }
+
+}
+
+function dropQween(event,ui){
+    var table = $(this);
+    var file = ui.draggable;
+    var tableProc = file.parent();
+    dropGeneric(table,file,tableProc);
+
+    file.mousedown(downQween);
+    questionflow(file);
+
+}
+
+function dropQweenKill(event,ui){
+    var table = $(this);
+    var file = ui.draggable;
+    var tableProc = file.parent();
+    var killed = $("#"+table.attr("id")+" img");
+    checkmate(killed);
+    killed = killed.attr("src");
+    dropGeneric(table,file,tableProc);
+    file.mousedown(downQween);
+    $("#killeds").append("<img src='"+killed+"'>");
+    questionflow(file);
+}
+
+function questionKing(enabled){
+    var fAux=$("#"+enabled.attr("id")+ " img");
+    if(fAux.hasClass('fBlack')){
+        enabled.css("background","orange");
+        enabled.droppable({drop:dropKingKill});
+        enabled.droppable({accept:".kingB"});
+
+    }
+    if(fAux.hasClass('fWhite')){
+        enabled.css("background","orange");
+        enabled.droppable({drop:dropKingKill});
+        enabled.droppable({accept:".kingN"});
+
+
+    }
+}
+
+function enableKing(enabled){
+    enabled.css("background","purple");
+    enabled.droppable({drop:dropKing});
+    enabled.droppable({accept:".king"});
+}
+
+function downKing(){
+    unDroppable();
+    var file = $(this);
+    showinfo(file);
+    var box=file.parent().attr("id");
+    var arr = box.split("");
+    var column = arr[0];
+    var row = arr[1];
+
+    row = parseInt(row)+1;
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enableKing(enabled);
+    }
+    else{questionKing(enabled);}
+
+    column = parseInt(column)+1;
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enableKing(enabled);
+    }else{questionKing(enabled);}
+    column = parseInt(column)-2;
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enableKing(enabled);
+    }else{questionKing(enabled);}
+
+    row = parseInt(row)-1;
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enableKing(enabled);
+    }else{questionKing(enabled);}
+
+    column = parseInt(column)+2;
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enableKing(enabled);
+    }else{questionKing(enabled);}
+    row = parseInt(row)-1;
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enableKing(enabled);
+    }else{questionKing(enabled);}
+
+    column = parseInt(column)-1;
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enableKing(enabled);
+    }else{questionKing(enabled);}
+
+    column = parseInt(column)-1;
+    enabled=$("#"+column+row);
+    if(enabled.attr("value")=="empty"){
+        enableKing(enabled);
+    }else{questionKing(enabled);}
+
+    if(file.hasClass("fWhite")){
+        ennrrocar(enabled,"1");
+    }
+    else if(file.hasClass("fBlack")){
+        ennrrocar(enabled,"8");
+    }
+}
+
+function ennrrocar(enabled,fil){
+    
+
+    var previous=$("#"+6+fil);
+    if(previous.attr("value")=="empty"){
+        enabled=$("#"+7+fil);
+        var tower = $("#"+8+fil);
+        tower = $("#"+tower.attr("id")+" img");
+        if(enabled.attr("value")=="empty"&&tower.hasClass("tower")){
+            enabled.css("background","pink");
+            if(tower.hasClass("towerB")){
+                enabled.droppable({drop:dropEnrroqueDer});
+                enabled.droppable({accept:".kingB"});
+            }
+            else if(tower.hasClass("towerN")){
+                enabled.droppable({drop:dropEnrroqueDer});
+                enabled.droppable({accept:".kingN"});
+            }
+
+        }
+    }
+
+    previous=$("#"+4+fil);
+    if(previous.attr("value")=="empty"){
+        previous=$("#"+2+fil);
+        if(previous.attr("value")=="empty"){
+            enabled=$("#"+3+fil);
+            var tower = $("#"+1+fil);
+            tower = $("#"+tower.attr("id")+" img");
+            if(enabled.attr("value")=="empty"&&tower.hasClass("tower")){
+                enabled.css("background","pink");
+                if(tower.hasClass("towerB")){
+                    enabled.droppable({drop:dropEnrroqueIzq});
+                    enabled.droppable({accept:".kingB"});
+                }
+                else if(tower.hasClass("towerN")){
+                    enabled.droppable({drop:dropEnrroqueIzq});
+                    enabled.droppable({accept:".kingN"});
+                }
+            }
+        }
+    }
+}
+
+
+
+function dropEnrroqueDer(event,ui){
+    var table = $(this);
+    var file = ui.draggable;
+    var tableProc = file.parent();
+    dropGeneric(table,file,tableProc);
+    file.mousedown(downKing);
+    if(file.hasClass("fWhite")){
+        var tower = $("#"+8+1);
+        tower.attr("value","empty");
+        tower = $("#"+tower.attr("id")+" img");
+        var casTower=$("#"+6+1);
+        casTower.html(tower);
+        questionflow(file);
+        casTower.attr("value","empty");
+    }
+    else if (file.hasClass("fBlack")){
+        var tower = $("#"+8+8);
+        tower.attr("value","empty");
+        tower = $("#"+tower.attr("id")+" img");
+        var casTower=$("#"+6+8);
+        casTower.html(tower);
+        questionflow(file);
+        casTower.attr("value","empty");
+    }
+
+}
+function dropEnrroqueIzq(event,ui){
+    var table = $(this);
+    var file = ui.draggable;
+    var tableProc = file.parent();
+    dropGeneric(table,file,tableProc);
+    file.mousedown(downKing);
+    if(file.hasClass("fWhite")){
+        var tower = $("#"+1+1);
+        tower.attr("value","empty");
+        tower = $("#"+tower.attr("id")+" img");
+        var casTower=$("#"+4+1);
+        casTower.html(tower);
+        questionflow(file);
+    }
+    else if (file.hasClass("fBlack")){
+        var tower = $("#"+1+8);
+        tower.attr("value","empty");
+        tower = $("#"+tower.attr("id")+" img");
+        var casTower=$("#"+4+8);
+        casTower.html(tower);
+        questionflow(file);
+    }
+
+}
+
+function dropKing(event,ui){
+    var table = $(this);
+    var file = ui.draggable;
+    var tableProc = file.parent();
+    dropGeneric(table,file,tableProc);
+    file.mousedown(downKing);
+    questionflow(file);
+}
+function dropKingKill(event,ui){
+    var table = $(this);
+    var file = ui.draggable;
+    var tableProc = file.parent();
+    var killed = $("#"+table.attr("id")+" img");
+    checkmate(killed);
+    killed = killed.attr("src");
+    dropGeneric(table,file,tableProc);
+    file.mousedown(downKing);
+    $("#killeds").append("<img src='"+killed+"'>");
+    questionflow(file);
+}
+
+function unDroppable(){
+    for(var i=1;i<=8;i++){
+        for(var k=1;k<=8;k++){
+            var cas=$("#"+i+k);
+            cas.droppable({accept:"none"});
+
+
+        }
+    }
+
+    $(".white").css("background","#AAA");
+    $(".black").css("background","#555");
+}
+
+
+function upFile(){
+    var fic=$(this);
+    fic.css("position","absolute");
+    fic.css("left",".2em");
+    fic.css("top",".2em");
+
+}
+
+function checkmate(file){
+    var route=file.attr("src");
+    if(route=="img/kingN.png"){
+        $("body").css("opacity","0.5");
+        alert("Checkmate, the white chess pieces wins ");
+        location.reload();
+    }
+    if(route=="img/kingB.png"){
+        $("body").css("opacity","0.5");
+        alert("Checkmate, the black chess pieces wins ");
+        location.reload();
+    }
+
+}
+
